@@ -1,0 +1,16 @@
+*.swp
+*.o
+*.d
+*.aux
+*.log
+*.bbl
+*.blg
+*.pyc
+build/
+cbuild/
+tags
+logs/
+__pycache__/
+.ipynb_checkpoints/
+gen-cpp/
+.gradle/
