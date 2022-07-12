@@ -1,0 +1,12 @@
+warehouse
+  int32_t w_id
+  float w_tax
+  float w_ytd
+
+  std::string w_name
+
+  std::string w_address.a_street_1
+  std::string w_address.a_street_2
+  std::string w_address.a_city
+  std::string w_address.a_state
+  std::string w_address.a_zip

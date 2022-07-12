@@ -1,0 +1,5 @@
+region
+  int32_t r_id
+
+  std::string r_name
+  std::string r_comment

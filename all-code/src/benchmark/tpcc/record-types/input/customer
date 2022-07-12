@@ -1,0 +1,32 @@
+customer
+  int32_t c_id
+  int32_t c_d_id
+  int32_t c_w_id
+
+  int32_t c_n_id
+
+  float   c_credit_lim
+  float   c_discount
+  float   c_balance
+  float   c_ytd_payment
+  int32_t c_payment_cnt
+  int32_t c_delivery_cnt
+
+  std::string c_first
+  std::string c_middle
+  std::string c_last
+
+  std::string c_address.a_street_1
+  std::string c_address.a_street_2
+  std::string c_address.a_city
+  std::string c_address.a_state
+  std::string c_address.a_zip
+
+  std::string c_phone
+
+  uint64_t c_since.c_since
+
+  std::string     c_credit
+  std::string     c_data
+
+

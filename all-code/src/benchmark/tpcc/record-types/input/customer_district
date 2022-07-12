@@ -1,0 +1,7 @@
+customer_district
+    int32_t c_id
+    int32_t c_d_id
+    int32_t c_w_id
+
+    int32_t c_next_o_id
+

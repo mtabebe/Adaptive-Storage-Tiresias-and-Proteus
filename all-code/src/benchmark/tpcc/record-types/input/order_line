@@ -1,0 +1,14 @@
+order_line
+    int32_t ol_o_id
+    int32_t ol_d_id
+    int32_t ol_w_id
+    int32_t ol_number
+    int32_t ol_i_id
+    int32_t ol_supply_w_id
+    int32_t ol_quantity
+    float   ol_amount
+
+    uint64_t ol_delivery_d.c_since
+
+    std::string ol_dist_info
+

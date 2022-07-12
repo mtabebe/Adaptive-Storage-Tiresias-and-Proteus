@@ -1,0 +1,23 @@
+stock
+    int32_t s_i_id
+    int32_t s_w_id
+
+    int32_t s_s_id
+
+    int32_t s_quantity
+    int32_t s_ytd
+    int32_t s_order_cnt
+    int32_t s_remote_cnt
+
+    std::string s_dist_0
+    std::string s_dist_1
+    std::string s_dist_2
+    std::string s_dist_3
+    std::string s_dist_4
+    std::string s_dist_5
+    std::string s_dist_6
+    std::string s_dist_7
+    std::string s_dist_8
+    std::string s_dist_9
+
+    std::string s_data

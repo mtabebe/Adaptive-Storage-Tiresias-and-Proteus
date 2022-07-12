@@ -1,0 +1,11 @@
+history
+    int32_t h_c_id
+    int32_t h_c_d_id
+    int32_t h_c_w_id
+    int32_t h_d_id
+    int32_t h_w_id
+    float   h_amount
+
+    uint64_t h_date.c_since
+
+    std::string h_data

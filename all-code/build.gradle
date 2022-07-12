@@ -1,0 +1,412 @@
+plugins {
+  id "org.jruyi.thrift" version "0.3.2"
+  id 'com.palantir.git-version' version "0.10.1"
+}
+
+apply plugin: 'cpp'
+
+compileThrift {
+  sourceDir "src/thrift-interface"
+  outputDir "src/gen-cpp"
+  generator 'cpp'
+  recurse true
+}
+
+def setHeaderPathOrAssert( headerName, headers ) {
+    def headerPaths = [ "/usr/local/include", "/usr/include" ]
+    def foundHeaders = false
+    for( fname in headerPaths ) {
+        def locName = fname;
+        if( fname[-1] != "/" ) {
+            locName = fname + "/"
+        }
+        if( file( locName ).exists() &&
+            file( locName + headerName ).exists() ) {
+            headers.srcDir locName + headerName
+            foundHeaders = true
+            break;
+        }
+    }
+    assert foundHeaders : headerName
+}
+
+def setLinkPathOrAssert( fileName, isStatic, binaries ) {
+    def linkPaths = [ "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu" ]
+    def foundLink = false
+    for( fname in linkPaths ) {
+        def locName = fname;
+        if( fname[-1] != "/" ) {
+            locName = fname + "/"
+        }
+        if( file( locName ).exists() &&
+            file( locName + fileName ).exists() ) {
+            if( !isStatic ) {
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file( locName + fileName )
+                }
+            } else {
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file( locName + fileName )
+                }
+            }
+            foundLink = true
+            break;
+        }
+    }
+    assert foundLink : fileName
+
+}
+
+// because all the mains are in drivers we need to exclude the driver that
+// not the one we want (driverName)
+def shouldExclude(elem, driverName) {
+  boolean isDriver = elem.getFile().getAbsolutePath().contains('driver')
+  boolean isRightDriver = elem.getFile().getAbsolutePath().contains(driverName)
+  !(!isDriver || isRightDriver)
+}
+
+
+model {
+    buildTypes {
+        debug
+        debugNonOpt
+        release
+    }
+    binaries {
+        all {
+            if( toolChain in Gcc ) {
+                cppCompiler.args "-g", "-lpthread", "-march=native", "-Wall", "-Werror", "-std=c++17"
+            }
+
+            if( buildType == buildTypes.release ) {
+                cppCompiler.define "NDEBUG"
+                cppCompiler.args "-O3", "-DRECORD_COMMIT_TS", "-DUSE_SIMD", "-DGIT_VERSION=\"" + gitVersion() + "\""
+                //cppCompiler.args "-O3", "-DUSE_SIMD", "-DGIT_VERSION=\"" + gitVersion() + "\""
+            } else if (buildType == buildTypes.debug ) {
+                //cppCompiler.args "-O3", "-DGIT_VERSION=\"" + gitVersion() + "\""
+                cppCompiler.args "-O3", "-DRECORD_COMMIT_TS", "-DGIT_VERSION=\"" + gitVersion() + "\""
+            } else {
+                cppCompiler.args "-DRECORD_COMMIT_TS", "-DGIT_VERSION=\"" + gitVersion() + "\""
+            }
+            linker.args "-ldl"
+            linker.args "-ldouble-conversion"
+            linker.args "-pthread"
+        }
+    }
+    repositories {
+        libs(PrebuiltLibraries) {
+            glog {
+                setHeaderPathOrAssert( "glog", headers )
+                setLinkPathOrAssert( "libglog.so", false, binaries )
+            }
+            gmock {
+                setHeaderPathOrAssert( "gmock", headers )
+                setLinkPathOrAssert( "libgmock.so", false, binaries )
+            }
+            gflags {
+                setHeaderPathOrAssert( "gflags", headers )
+                setLinkPathOrAssert( "libgflags.so", false, binaries )
+            }
+            gtest {
+                setHeaderPathOrAssert( "gtest", headers )
+                setLinkPathOrAssert( "libgtest.so", false, binaries )
+            }
+            pthread {
+                headers.srcDir "/usr/include/"
+                setLinkPathOrAssert( "libpthread.so", false, binaries )
+            }
+            boost_filesystem {
+                setHeaderPathOrAssert( "boost", headers )
+                setLinkPathOrAssert( "libboost_filesystem.so", false, binaries )
+            }
+            boost_system {
+                setHeaderPathOrAssert( "boost", headers )
+                setLinkPathOrAssert( "libboost_system.so", false, binaries )
+            }
+
+            boost_serialization {
+                headers.srcDir "/usr/include/"
+                setLinkPathOrAssert( "libboost_serialization.so", false, binaries )
+            }
+            folly {
+                setHeaderPathOrAssert( "folly", headers );
+                setLinkPathOrAssert( "libfolly.a", true, binaries )
+            }
+            thrift{
+                setHeaderPathOrAssert( "thrift", headers );
+                setLinkPathOrAssert( "libthrift.so", false, binaries )
+            }
+            librdkafka {
+                setHeaderPathOrAssert( "librdkafka", headers );
+                setLinkPathOrAssert( "librdkafka.so", false, binaries )
+            }
+            libdlib {
+                headers.srcDir "/usr/local/include/"
+                setLinkPathOrAssert( "libdlib.a", true, binaries )
+            }
+            libtorch {
+              // We need to include both torch root and csrc/api paths
+              // See: https://discuss.pytorch.org/t/where-to-find-torch-torch-h/59908
+              headers.srcDirs = ["/usr/local/include/torch/csrc/api/include", "/usr/local/include/torch/"]
+                setLinkPathOrAssert( "libtorch.so", false, binaries )
+            }
+            libcten {
+                setLinkPathOrAssert( "libc10.so", false, binaries )
+            }
+            libtorch_cpu {
+                setLinkPathOrAssert( "libtorch_cpu.so", false, binaries )
+            }
+        }
+    }
+    components {
+	//Uncomment when we have a datasite driver
+        //dataSite(NativeExecutableSpec) {
+        //    sources {
+        //        cpp.lib library: 'glog', linkage: 'shared'
+        //        cpp.lib library: 'gflags', linkage: 'shared'
+        //        cpp.lib library: 'pthread', linkage: 'shared'
+        //        cpp.lib library: 'folly', linkage: 'shared'
+        //        cpp {
+        //            source {
+        //                srcDir "src"
+        //                include "**/*.cpp"
+        //            }
+        //        }
+        //    }
+        //}
+        unitTest(NativeExecutableSpec) {
+            binaries.all {
+                cppCompiler.define "UNIT_TEST"
+            }
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gmock', linkage: 'shared'
+                cpp.lib library: 'gtest', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "test"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+        single_site_benchmark(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/single_site_benchmark.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'single_site_benchmark')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+        site_manager_server(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/site_manager_server.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'site_manager_server')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+        site_selector_server(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/site_selector_server.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'site_selector_server')
+                        }
+                        exclude "**/*skeleton*"
+
+                    }
+                }
+            }
+        }
+        rewrite_persistent_data(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/rewrite_persistent_data.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'rewrite_persistent_data')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+
+        kafka_consumer(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/kafka_consumer.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'kafka_consumer')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+        tpcc_generator(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/tpcc_generator.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'tpcc_generator')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+        cracker(NativeExecutableSpec) {
+            sources {
+                cpp.lib library: 'glog', linkage: 'shared'
+                cpp.lib library: 'gflags', linkage: 'shared'
+                cpp.lib library: 'pthread', linkage: 'shared'
+                cpp.lib library: 'folly', linkage: 'static'
+                cpp.lib library: 'thrift', linkage: 'shared'
+                cpp.lib library: 'librdkafka', linkage: 'shared'
+                cpp.lib library: 'boost_filesystem', linkage: 'shared'
+                cpp.lib library: 'boost_system', linkage: 'shared'
+                cpp.lib library: 'libdlib', linkage: 'static'
+                cpp.lib library: 'libtorch', linkage: 'shared'
+                cpp.lib library: 'libtorch_cpu', linkage: 'shared'
+                cpp.lib library: 'libcten', linkage: 'shared'
+                cpp {
+                    source {
+                        srcDir "drivers"
+                        include "drivers/cracker.cpp"
+                        srcDir "src"
+                        include "**/*.cpp"
+                        exclude { FileTreeElement elem ->
+                          shouldExclude(elem, 'cracker')
+                        }
+                        exclude "**/*skeleton*"
+                    }
+                }
+            }
+        }
+    }
+}
+
+clean.doFirst {
+    delete "src/gen-cpp"
+}
+
+build.dependsOn compileThrift
+compileThrift.execute()

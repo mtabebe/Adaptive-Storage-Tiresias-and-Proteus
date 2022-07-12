@@ -1,0 +1,15 @@
+district
+    int32_t d_id
+    int32_t d_w_id
+    float   d_tax
+    float   d_ytd
+    int32_t d_next_o_id
+
+    std::string d_name
+
+    std::string d_address.a_street_1
+    std::string d_address.a_street_2
+    std::string d_address.a_city
+    std::string d_address.a_state
+    std::string d_address.a_zip
+

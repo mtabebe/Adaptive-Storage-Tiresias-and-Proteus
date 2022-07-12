@@ -1,0 +1,18 @@
+supplier
+  int32_t s_id
+  int32_t n_id
+
+  std::string s_name
+
+  std::string s_phone
+
+  std::string s_address.a_street_1
+  std::string s_address.a_street_2
+  std::string s_address.a_city
+  std::string s_address.a_state
+  std::string s_address.a_zip
+
+
+  float s_acctbal
+  std::string s_comment
+

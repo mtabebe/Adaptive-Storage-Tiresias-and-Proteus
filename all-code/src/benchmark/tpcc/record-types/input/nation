@@ -1,0 +1,6 @@
+nation
+  int32_t n_id
+  int32_t r_id
+
+  std::string n_name
+  std::string n_comment

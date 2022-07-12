@@ -1,0 +1,10 @@
+order
+    int32_t o_id
+    int32_t o_c_id
+    int32_t o_d_id
+    int32_t o_w_id
+    int32_t o_carrier_id
+    int32_t o_ol_cnt
+    int32_t o_all_local
+
+    uint64_t o_entry_d.c_since

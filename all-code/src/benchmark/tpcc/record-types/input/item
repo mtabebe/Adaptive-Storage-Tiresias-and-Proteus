@@ -1,0 +1,8 @@
+item
+    int32_t i_id
+    int32_t i_im_id
+    float   i_price
+
+    std::string i_name
+
+    std::string i_data

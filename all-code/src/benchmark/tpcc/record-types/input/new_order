@@ -1,0 +1,4 @@
+new_order
+    int32_t no_w_id
+    int32_t no_d_id
+    int32_t no_o_id

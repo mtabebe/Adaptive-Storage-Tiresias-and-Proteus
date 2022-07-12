@@ -1,0 +1,11 @@
+twitter_user_profile
+    uint32_t u_id
+
+    std::string name
+
+    uint32_t num_followers
+    uint32_t num_following
+
+    uint32_t num_tweets
+
+    uint32_t next_tweet_id
