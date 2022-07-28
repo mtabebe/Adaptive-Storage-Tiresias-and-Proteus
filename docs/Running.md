@@ -12,7 +12,9 @@ By changing the benchmark configuration file and benchmark name to oltpbench, di
 
 # Cracking
 
-The experiments with cracking can be run by running the cracking [driver](all-code/drivers/cracker.cpp). Changing the
+The experiments with cracking can be run by running the cracking [driver](../all-code/drivers/cracker.cpp), after building the source code.
+
+Changing the gflags passed to the driver changes the experimental setup. For example, to run an experiment with only the SPAR predictor, run: `./cracker --scrack_do_prediction --scrack_eqp_type=SPAR`
 
 ## Notes
 
