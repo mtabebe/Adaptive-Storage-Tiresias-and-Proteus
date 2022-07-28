@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<parameters>
+    <dbtype>postgres</dbtype>
+    <driver>org.postgresql.Driver</driver>
+    <DBUrl>localhost:9090</DBUrl>
+    <DBName>tpcc</DBName>
+    <SSMasteringType>adapt_htap</SSMasteringType>
+    <!--
+    <SSMasteringType>dynamic_mastering</SSMasteringType>
+    -->
+    <username>joe</username>
+    <password>joe</password>
+    <isolation>TRANSACTION_READ_COMMITTED</isolation>
+
+    <!-- Scale factor is the number of warehouses in TPCC -->
+    <scalefactor>2</scalefactor>
+    <numSites>2</numSites>
+
+    <ReloadStateType>none</ReloadStateType>
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-partitioned/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-partitioned/ss/</SSRestoreLocation>
+    <PartitionRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-partitioned/partition/</PartitionRestoreLocation>
+    <!--
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-partitioned-whouse/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-partitioned-whouse/ss/</SSRestoreLocation>
+    -->
+
+    <ReplayType>none</ReplayType>
+    <ReplayDirectory>/hdd1/dyna-mast-replay/tpcc-test-mixes</ReplayDirectory>
+
+
+    <!-- The workload -->
+    <terminals>10</terminals>
+    <baseTerminalId>0</baseTerminalId>
+    <works>
+        <work>
+          <time>60</time>
+          <rate>10000</rate>
+          <ratelimited bench="tpcc">true</ratelimited>
+          <!--<weights>45,43,0,0,12</weights> -->
+          <weights>0,1000,0,0,0</weights>
+        </work>
+	</works>
+
+	<!-- TPCC specific -->
+   	<transactiontypes>
+    	<transactiontype>
+    		<name>NewOrder</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>Payment</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>OrderStatus</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>Delivery</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>StockLevel</name>
+    	</transactiontype>
+   	</transactiontypes>
+</parameters>

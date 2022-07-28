@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<parameters>
+    <dbtype>postgres</dbtype>
+    <driver>org.postgresql.Driver</driver>
+    <DBUrl>localhost:9090</DBUrl>
+    <SSMasteringType>adapt_htap</SSMasteringType>
+    <DBName>smallbank</DBName>
+    <username>joe</username>
+    <password>joe</password>
+
+    <!-- Scalefactor in SmallBank is *1000000 the number of rows in the USERTABLE-->
+    <scalefactor>1</scalefactor>
+    <numSites>2</numSites>
+    <!-- num partitions is really the partition size for smallbank -->
+    <numPartitions>100</numPartitions>
+    <meanBatchSize>3</meanBatchSize>
+    <neighborProportion>80</neighborProportion>
+
+    <ReloadStateType>none</ReloadStateType>
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-leap-range/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-leap-range/ss/</SSRestoreLocation>
+    <PartitionRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-leap-range/partition/</PartitionRestoreLocation>
+
+    <ReplayType>none</ReplayType>
+    <ReplayDirectory>/hdd1/dyna-mast-replay/ycsb-test-mixes</ReplayDirectory>
+
+    <!-- The workload -->
+    <terminals>1</terminals>
+    <baseTerminalId>0</baseTerminalId>
+    <works>
+        <work>
+          <time>120</time>
+          <rate>unlimited</rate>
+          <weights>15,15,15,25,15,15</weights>
+          <!-- <weights>0,0,33,0,33,34</weights> -->
+        </work>
+    </works>
+
+    <!-- SmallBank Procedures declaration -->
+    <transactiontypes>
+        <transactiontype>
+            <name>Amalgamate</name>
+        </transactiontype>
+        <transactiontype>
+            <name>Balance</name>
+        </transactiontype>
+        <transactiontype>
+            <name>DepositChecking</name>
+        </transactiontype>
+        <transactiontype>
+            <name>SendPayment</name>
+        </transactiontype>
+        <transactiontype>
+            <name>TransactSavings</name>
+        </transactiontype>
+        <transactiontype>
+            <name>WriteCheck</name>
+        </transactiontype>
+    </transactiontypes>
+</parameters>

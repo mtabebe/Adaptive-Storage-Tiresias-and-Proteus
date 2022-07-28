@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<parameters>
+    <dbtype>postgres</dbtype>
+    <driver>org.postgresql.Driver</driver>
+    <DBUrl>localhost:9090</DBUrl>
+    <DBName>adapt_htap</DBName>
+    <SSMasteringType>dynamic_mastering</SSMasteringType>
+    <username>joe</username>
+    <password>joe</password>
+
+    <!-- Scalefactor in YCSB is *1000 the number of rows in the USERTABLE-->
+    <scalefactor>10</scalefactor>
+    <!-- num partitions is really the partition size for ycsb -->
+    <numSites>4</numSites>
+    <numPartitions>100</numPartitions>
+    <meanBatchSize>3</meanBatchSize>
+    <neighborProportion>80</neighborProportion>
+
+    <ReloadStateType>none</ReloadStateType>
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-partitioned/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-partitioned/ss/</SSRestoreLocation>
+    <PartitionRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-partitioned/partition/</PartitionRestoreLocation>
+
+
+
+    <!-- The workload -->
+    <terminals>100</terminals>
+    <baseTerminalId>0</baseTerminalId>
+    <works>
+        <work>
+          <time>60</time>
+          <rate>unlimited</rate>
+          <weights>10,10,10,10,0,50,10</weights>
+        </work>
+    </works>
+
+    <!-- YCSB Procedures declaration -->
+    <transactiontypes>
+        <transactiontype>
+                <name>ReadRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>InsertRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>ScanRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>UpdateRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>DeleteRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>ReadModifyWriteRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>MultiReadModifyWriteRecord</name>
+        </transactiontype>
+    </transactiontypes>
+</parameters>
