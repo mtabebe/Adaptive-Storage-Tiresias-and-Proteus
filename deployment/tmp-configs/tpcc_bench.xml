@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<parameters>
+    <dbtype>postgres</dbtype>
+    <driver>org.postgresql.Driver</driver>
+    <DBUrl>localhost:9090</DBUrl>
+    <DBName>ycsb</DBName>
+    <SSMasteringType>drp</SSMasteringType>
+    <username>joe</username>
+    <password>joe</password>
+    <isolation>TRANSACTION_READ_COMMITTED</isolation>
+
+    <!-- Scale factor is the number of warehouses in TPCC -->
+    <scalefactor>2</scalefactor>
+
+    <ReloadStateType>none</ReloadStateType>
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-drp-clay-whouse/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-drp-clay-whouse/ss/</SSRestoreLocation>
+    <PartitionRestoreLocation>/hdd1/dyna-mast-persistence/tpcc-drp-clay-whouse/part/</PartitionRestoreLocation>
+
+
+    <!-- The workload -->
+    <terminals>4</terminals>
+    <baseTerminalId>0</baseTerminalId>
+    <works>
+        <work>
+          <time>300</time>
+          <rate>1000000</rate>
+          <ratelimited bench="tpcc">true</ratelimited>
+          <weights>45,45,0,0,10,0</weights>
+          <!--<weights>0,100,0,0,0</weights>-->
+        </work>
+	</works>
+
+	<!-- TPCC specific -->
+   	<transactiontypes>
+    	<transactiontype>
+    		<name>NewOrder</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>Payment</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>OrderStatus</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>Delivery</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>StockLevel</name>
+    	</transactiontype>
+    	<transactiontype>
+    		<name>HAll</name>
+    	</transactiontype>
+   	</transactiontypes>
+</parameters>

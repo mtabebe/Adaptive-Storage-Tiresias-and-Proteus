@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<parameters>
+    <dbtype>postgres</dbtype>
+    <driver>org.postgresql.Driver</driver>
+    <DBUrl>localhost:9090</DBUrl>
+    <DBName>ycsb</DBName>
+    <SSMasteringType>adapt</SSMasteringType>
+    <username>joe</username>
+    <password>joe</password>
+
+    <!-- Scalefactor in YCSB is *1000 the number of rows in the USERTABLE-->
+    <scalefactor>500</scalefactor>
+    <!-- num partitions is really the partition size for ycsb -->
+    <numSites>2</numSites>
+    <numPartitions>500</numPartitions>
+    <meanBatchSize>3</meanBatchSize>
+    <neighborProportion>80</neighborProportion>
+
+    <ReloadStateType>none</ReloadStateType>
+    <DBRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-drp-es-range-sf-500-end-dump/db/</DBRestoreLocation>
+    <SSRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-drp-es-range-sf-500-end-dump/ss/</SSRestoreLocation>
+    <PartitionRestoreLocation>/hdd1/dyna-mast-persistence/ycsb-drp-es-range-sf-500-end-dump/part/</PartitionRestoreLocation>
+
+    <ReplayType>none</ReplayType>
+    <ReplayDirectory>/hdd1/dyna-mast-replay/ycsb-uniform-1GB-50W-trace-links</ReplayDirectory>
+
+    <!-- The workload -->
+    <terminals>5</terminals>
+    <baseTerminalId>0</baseTerminalId>
+    <works>
+        <work>
+          <time>120</time>
+          <!-- <time>10</time> -->
+          <rate>unlimited</rate>
+          <weights>0,0,100,0,0,0,0</weights>
+        </work>
+    </works>
+
+    <!-- YCSB Procedures declaration -->
+    <transactiontypes>
+        <transactiontype>
+                <name>ReadRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>InsertRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>ScanRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>UpdateRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>DeleteRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>ReadModifyWriteRecord</name>
+        </transactiontype>
+        <transactiontype>
+                <name>MultiReadModifyWriteRecord</name>
+        </transactiontype>
+    </transactiontypes>
+</parameters>
