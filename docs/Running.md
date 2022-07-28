@@ -10,6 +10,8 @@ These steps are for the deployment of a cluster all on a single node (two data s
 
 By changing the benchmark configuration file and benchmark name to oltpbench, different benchmark workloads can be executed.
 
+Additionally, by changing the [global configuration](../deployment/tmp-configs/global-consts.cfg) file to different constant values from the [default](all-code/src/common/constants.cpp), you can change the parameters of the system. For instance, changing [SPAR hyperparameters](https://github.com/mtabebe/Adaptive-Storage-Tiresias-and-Proteus/blob/5508f540ddf6e6d348c9616164af0a5aa1ce2a39/all-code/src/common/constants.cpp#L57-L93)
+
 # Cracking
 
 The experiments with cracking can be run by running the cracking [driver](../all-code/drivers/cracker.cpp), after building the source code.
