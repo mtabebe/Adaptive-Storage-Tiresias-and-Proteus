@@ -6,3 +6,4 @@ This folder contains the source code and trace data for Tiresias (VLDB'22).
 
 [all-code](all-code/) contains all the actual implementation source code.
 
+Information on running the system in our experimental configuration is [available](docs/Running.md).

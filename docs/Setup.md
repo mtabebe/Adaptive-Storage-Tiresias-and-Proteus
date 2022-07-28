@@ -1,8 +1,8 @@
 # How To Setup A Cluster
 
 ## Setup Machines
-* Reserve a set of machines on [tembo](tembo-reserve.cs.uwaterloo.ca), list them in a configuration file, say */hdd1/dyna-mast/horizondb/deployment/tmp-configs/tpcc-machines.txt*
-* Become brad
+* Reserve a set of machines list them in a configuration file, say */hdd1/dyna-mast/horizondb/deployment/tmp-configs/tpcc-machines.txt*
+* Become the user, in this case mtabebe
   * `sudo su - mtabebe`
 * Ensure you can ssh to each machine:
   * `./ssh_script.sh -c ../tmp-configs/tpcc-machines.txt` repeat adding to the *known_hosts* file
